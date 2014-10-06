@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "Gmail UI update",
+  "description": "Fixes a couple of things",
+  "version": "1.0",
+
+  "permissions": [
+  ],
+  "browser_action": {
+  },
+  "content_scripts": [
+        {
+        "matches": [
+            "https://mail.google.com/*"
+            ],
+        "js": ["content.js"],
+        "run_at": "document_end"
+        }
+    ]
+}
