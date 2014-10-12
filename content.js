@@ -15,6 +15,7 @@ var cumulativeOffset = function(element) {
     };
 };
 
+
 /*
   get the index of a node in parent's children list
 */
@@ -30,8 +31,6 @@ var indexInParentNode = function(node) {
 /*
   When the current page changes, run the initialization script again
 */
-
-
 function hashHandler() {
     this.oldHash = window.location.hash;
     this.Check;
@@ -47,28 +46,28 @@ function hashHandler() {
 }
 var hashDetection = new hashHandler();
 
+
 /*
   handle debug
 */
-
 var debug = function(message) {
   if(shouldDebug) {
     console.log(message);
   }
 };
 
+
 /*
   actually do something
 */
-
 var SCROLLING_AREA_SELECTOR = 'Tm aeJ';
 var ACTION_BAR_SELECTOR = 'nH aqK';
 var PIXELS_OFFSET = 60;
 
 // memory
-var isUp;
 var originalActionBarIndex, originlActionBarPosition, scrollingArea;
 var actionBarCandidates, actionBar, scrolled, rowToMove;
+var processTimeout;
 var shouldDebug = true;
 
 var initialize = function() {
@@ -91,8 +90,7 @@ var initialize = function() {
       originalActionBarIndex = indexInParentNode(rowToMove);
       originlActionBarPosition = cumulativeOffset(actionBar);
       scrollingArea = document.getElementsByClassName(SCROLLING_AREA_SELECTOR)[0];
-      scrollingArea.addEventListener("scroll", process);
-      isUp = null;
+      scrollingArea.addEventListener("scroll", deferProcess);
 
       debug(actionBar);
       debug(rowToMove);
@@ -106,21 +104,31 @@ var initialize = function() {
   } else { window.setTimeout(initialize, 1000); }
 };
 
+var computeIsUp = function(node) {
+  return [].indexOf.call(node.parentNode.children, node) !== node.parentNode.children.length - 1;
+};
+
+// debounce the process function to avoid computing it too often
+var deferProcess = function() {
+  window.clearTimeout(processTimeout);
+  processTimeout = window.setTimeout(process, 100);
+};
+
 var process = function() {
   scrolled = scrollingArea.scrollTop;
-  debug('-');
+  var isUp = computeIsUp(rowToMove);
   debug('-');
   debug('top: ' + originlActionBarPosition.top);
   debug('scrolled: ' + scrolled);
   debug('isUp: ' + isUp);
   if(originlActionBarPosition.top < scrolled + PIXELS_OFFSET) {
-    if(isUp === true || isUp === null) {
+    if(isUp) {
       rowToMove.parentNode.appendChild(rowToMove);
       isUp = false;
     }
   }
   else {
-    if(isUp === false || isUp === null) {
+    if(!isUp) {
       rowToMove.parentNode.insertBefore(rowToMove, rowToMove.parentNode.children[originalActionBarIndex]);
       isUp = true;
     }
