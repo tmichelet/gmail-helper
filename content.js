@@ -46,6 +46,21 @@ function hashHandler() {
     this.Check = setInterval(function() { detect(); }, 100);
 }
 var hashDetection = new hashHandler();
+
+/*
+  handle debug
+*/
+
+var debug = function(message) {
+  if(shouldDebug) {
+    console.log(message);
+  }
+};
+
+/*
+  actually do something
+*/
+
 var SCROLLING_AREA_SELECTOR = 'Tm aeJ';
 var ACTION_BAR_SELECTOR = 'nH aqK';
 var PIXELS_OFFSET = 60;
@@ -57,6 +72,7 @@ var actionBar, scrolled, rowToMove;
 
 var initialize = function() {
   if(window.location.hash === "#inbox") {
+    debug('INITIALIZATION');
     try {
       actionBar = document.getElementsByClassName(ACTION_BAR_SELECTOR);
       actionBar = actionBar[actionBar.length-1];
@@ -65,7 +81,14 @@ var initialize = function() {
       originlActionBarPosition = cumulativeOffset(actionBar);
       scrollingArea = document.getElementsByClassName(SCROLLING_AREA_SELECTOR)[0];
       scrollingArea.addEventListener("scroll", process);
+
+      debug(actionBar);
+      debug(rowToMove);
+      debug(originalActionBarIndex);
+      debug(originlActionBarPosition);
+      debug(scrollingArea);
     } catch(error) {
+      debug(error);
       window.setTimeout(initialize, 1000);
     }
   } else { window.setTimeout(initialize, 1000); }
@@ -73,6 +96,11 @@ var initialize = function() {
 
 var process = function() {
   scrolled = scrollingArea.scrollTop;
+  debug('-');
+  debug('-');
+  debug('top: ' + originlActionBarPosition.top);
+  debug('scrolled: ' + scrolled);
+  debug('isUp: ' + isUp);
   if(originlActionBarPosition.top < scrolled + PIXELS_OFFSET) {
     if(isUp) {
       rowToMove.parentNode.appendChild(rowToMove);
