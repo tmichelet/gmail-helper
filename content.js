@@ -27,6 +27,25 @@ var indexInParentNode = function(node) {
 };
 
 
+/*
+  When the current page changes, run the initialization script again
+*/
+
+
+function hashHandler() {
+    this.oldHash = window.location.hash;
+    this.Check;
+
+    var that = this;
+    var detect = function(){
+        if(that.oldHash!=window.location.hash){
+            window.setTimeout(initialize, 100);
+            that.oldHash = window.location.hash;
+        }
+    };
+    this.Check = setInterval(function() { detect(); }, 100);
+}
+var hashDetection = new hashHandler();
 var SCROLLING_AREA_SELECTOR = 'Tm aeJ';
 var ACTION_BAR_SELECTOR = 'nH aqK';
 var PIXELS_OFFSET = 60;
