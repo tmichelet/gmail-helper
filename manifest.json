@@ -7,8 +7,6 @@
 
   "permissions": [
   ],
-  "browser_action": {
-  },
   "content_scripts": [
         {
         "matches": [
