@@ -66,21 +66,33 @@ var ACTION_BAR_SELECTOR = 'nH aqK';
 var PIXELS_OFFSET = 60;
 
 // memory
-var isUp = true;
+var isUp;
 var originalActionBarIndex, originlActionBarPosition, scrollingArea;
-var actionBar, scrolled, rowToMove;
+var actionBarCandidates, actionBar, scrolled, rowToMove;
+var shouldDebug = true;
 
 var initialize = function() {
-  if(window.location.hash === "#inbox") {
+  if(window.location.hash.indexOf("#inbox") !== -1) {
     debug('INITIALIZATION');
     try {
-      actionBar = document.getElementsByClassName(ACTION_BAR_SELECTOR);
-      actionBar = actionBar[actionBar.length-1];
+      actionBar = null;
+      actionBarCandidates = document.getElementsByClassName(ACTION_BAR_SELECTOR);
+      /* the ation bar is the last visible element from the former list */
+      for (var i = actionBarCandidates.length - 1; i >= 0; i--) {
+        if(actionBarCandidates[i].offsetParent !== null) {
+          actionBar = actionBarCandidates[i];
+          break;
+        }
+      }
+      if(actionBar === null) {
+        throw "nothing visible yet";
+      }
       rowToMove = actionBar.parentNode.parentNode;
       originalActionBarIndex = indexInParentNode(rowToMove);
       originlActionBarPosition = cumulativeOffset(actionBar);
       scrollingArea = document.getElementsByClassName(SCROLLING_AREA_SELECTOR)[0];
       scrollingArea.addEventListener("scroll", process);
+      isUp = null;
 
       debug(actionBar);
       debug(rowToMove);
@@ -102,17 +114,16 @@ var process = function() {
   debug('scrolled: ' + scrolled);
   debug('isUp: ' + isUp);
   if(originlActionBarPosition.top < scrolled + PIXELS_OFFSET) {
-    if(isUp) {
+    if(isUp === true || isUp === null) {
       rowToMove.parentNode.appendChild(rowToMove);
       isUp = false;
     }
   }
   else {
-    if(!isUp) {
+    if(isUp === false || isUp === null) {
       rowToMove.parentNode.insertBefore(rowToMove, rowToMove.parentNode.children[originalActionBarIndex]);
       isUp = true;
     }
   }
 };
 window.setTimeout(initialize, 5000);
-
